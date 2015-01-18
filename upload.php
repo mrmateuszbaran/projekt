@@ -1,7 +1,12 @@
 ﻿<?php
-		
-	$polaczenie = mysql_connect('mysql.hostinger.pl', 'u322806910_wieik', 'info3pk');
-	mysql_select_db('u322806910_wieik');
+	if (isset($_POST['uploadSubmit']))
+	{
+		ini_set('default_socket_timeout', 900); // 900 sekund = 15 minut
+	}
+?>
+
+<?php
+	//include "globals.php";
 	
 	$included = false;	// if przetwarzanie included
 	
@@ -11,14 +16,6 @@
 		$target_dir = $target_dir . basename( $_FILES["uploadFile"]["name"][$i]);		// TODO: wiele plikow na raz
 		$uploadOk = 1;
 		$nazwaPliku = basename( $_FILES["uploadFile"]["name"][$i]);
-
-		//echo "Wybrano plik: ".basename( $_FILES["uploadFile"]["name"])."<br>";
-		
-		$czy_istnieje = mysql_num_rows(mysql_query("SELECT * FROM obrazy WHERE Nazwa = '$nazwaPliku'"));
-		if ($czy_istnieje != 0) {
-			die("Plik już istnieje!<br>");
-			$uploadOk = 0;
-		} 
 
 		$ext = explode('.', $nazwaPliku);
 		$ext = $ext[count($ext)-1];
@@ -40,30 +37,15 @@
 				$included = true;
 			}
 			$image = imagecreatefromstring(file_get_contents ($_FILES["uploadFile"]["tmp_name"][$i]));
+			$data = date('Y-m-d H:i:s');
 			$hash = generateHashFromImage($image);
-			mysql_query("INSERT INTO obrazy(Nazwa, Autor, Hash, Dane) VALUES ('$nazwaPliku','Mateusz','$hash', '$content')") or die("Błąd przesyłania pliku, prawdopodobnie zbyt duży rozmiar - maksymalnie 1MB!");
+			$dctHash = generateDCTHashFromImage($image);
+			$bd->wykonajZapytanie("Kraków", "INSERT INTO obrazy(data, hashAvg, hashDCT, dane) VALUES ('$data','$hash', '$dctHash', '$content')");
 			$_SESSION['upload'] = "OK";
-			// if (move_uploaded_file($_FILES["uploadFile"]["tmp_name"], $target_dir)) 
-			// {
-				// echo "Plik ". basename( $_FILES["uploadFile"]["name"]). " został poprawnie załadowany.<br>";
-				
-				// $content = mysql_real_escape_string(file_get_contents ($target_dir));
-				// $exif = exif_read_data($target_dir, 'IFD0');
-				// if ($exif)
-					// var_dump($exif);
-				// else 
-					// echo "Brak meta-danych!";
-
-				// mysql_query("INSERT INTO obrazy(Nazwa, Autor, Hash, Dane) VALUES ('$nazwaPliku','Mateusz','HASZTEMP', '$content')") or print(mysql_error());
-				
-			// } else {
-				// echo "Błąd wgrywania pliku!<br>";
-			// }		
+			imagedestroy($image);
 		} else
 		{
 			echo "Plik nie został załadowany...<br>";
 		}
-	}
-	
-	mysql_close($polaczenie);	
+	}	
 ?>

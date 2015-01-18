@@ -26,9 +26,16 @@ body {
 	margin-bottom: 100px;
 }
 
+a, a:link, a:visited {
+	color: white;
+	text-decoration: none;
+}
+
 ul li {
 	display: inline;
 	margin-right: 20px;
+	color: white;
+	text-decoration: none;
 }
 
 #kontener {
@@ -57,7 +64,6 @@ ul li {
 #link-menu-home div {
 	background: url('res/strona_glowna.png');
 }
-
 #link-menu-home:hover div {
 	background: url('res/strona_glowna_act.png');
 }
@@ -65,7 +71,6 @@ ul li {
 #link-menu-miejsca div {
 	background: url('res/miejsca_zbrodni.png');
 }
-
 #link-menu-miejsca:hover div {
 	background: url('res/miejsca_zbrodni_act.png');
 }
@@ -73,18 +78,61 @@ ul li {
 #link-menu-podejrzani div {
 	background: url('res/podejrzani.png');
 }
-
 #link-menu-podejrzani:hover div {
 	background: url('res/podejrzani_act.png');
+}
+
+#link-menu-pojazdy div {
+	background: url('res/pojazdy.png');
+}
+#link-menu-pojazdy:hover div {
+	background: url('res/pojazdy_act.png');
 }
 
 #link-menu-onas div {
 	background: url('res/o_projekcie.png');
 }
-
 #link-menu-onas:hover div {
 	background: url('res/o_projekcie_act.png');
 }
+
+#link-menu-konto div {
+	background: url('res/moje_konto.png');
+}
+#link-menu-konto:hover div {
+	background: url('res/moje_konto_act.png');
+}
+#link-menu-konto > ul {
+	overflow: hidden;
+	border: 0px;
+	width: 150px;
+	height: 0px;
+	padding: 0px;
+	position: absolute;
+	margin-top: -2px;
+	margin-left: 810px;
+	background: rgba(0, 0, 0, 0.5);
+	border-radius: 5px;
+	z-index: 2;
+}
+#link-menu-konto:hover > ul {
+	display: block;
+	height: 70px;
+	border: 1px black solid;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+#link-menu-konto  > ul > li {
+	display: block;
+	margin: 4px;
+	width: 142px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+#link-menu-konto > ul > li:hover {
+	background: rgba(255, 255, 255, 0.25);
+}
+
 
 #tresc {
 	width: 1024px;
@@ -97,14 +145,19 @@ ul li {
     border-image: url(res/rama.png) 5 round round;
 }
 
+#tresc > div {
+	margin: 20px;
+}
+
 #upload-box-link {
 	cursor: pointer;
 	color: white;
 	min-width: 300px;
 	text-shadow: 0px 0px 1px black;
 	margin-left: 800px;
-	margin-top: 0px;
+	margin-top: 25px;
 	position: absolute;
+	z-index: 1;
 }
 
 #upload-box {
@@ -128,11 +181,9 @@ ul li {
 	font-weight: bold;
 	text-align: center;
 }
-
 #obraz-opis-nazwa, #obraz-opis-autor {
 	background: rgba(0,0,0,0.25);
 }
-
 #obraz-opis-tresc {
 	background: rgba(0,0,0,0.75);
 }
@@ -173,6 +224,96 @@ ul li {
 	border: 1px black solid;
 }
 
-.tooltip {
+#login-div {
+	color: white;
+	margin: 100px auto;
+	padding: 0px;
+	background: url('res/brakdostepu.png');
+	width: 150px;
+	height: 150px;
+	cursor: pointer;
+}
+
+#login-div > div {
+	width: 200px;
+	height: 0px;
+	color: black;
+	background: rgba(255, 255, 255, 0.75);
+	margin: -50px -50px 0px;
+	padding: 20px;
 	overflow: hidden;
+	opacity: 0;
+}
+
+#login-div:hover > div {
+	height: 200px;
+	opacity: 1;
+}
+
+.news-div {
+	border: 1px black solid;
+	border-radius: 5px;
+	background: rgba(255, 255, 255, 0.25);
+}
+.news-div div {
+	padding: 5px;
+	}
+.news-div-baza {
+	display: inline-block;
+	float: right;
+}
+.news-div-tytul {
+	background: rgba(25, 150, 50, 0.25);
+}
+.news-div-tresc{
+	background: rgba(255, 255, 255, 0.25);
+}
+.news-div-data{
+	display: inline-block;
+	float: right;
+}
+
+.a-strona {
+	margin: 5px;
+}
+.a-strona:hover {
+	text-shadow: 0px 0px 5px orange;
+	text-decoration: underline;
+}
+
+.miejsce-div {
+	display: block;
+	overflow: hidden;
+	position: absolute;
+	margin-top: -25px;
+	margin-left: 150px;
+	opacity: 0;
+	width: 0px;
+	height: 0px;
+	border: 1px black solid;
+}
+.miejsce-div-adres, .miejsce-div-autor, .miejsce-div-data{
+	border-bottom: 1px black solid;
+	color: white;
+	text-shadow: 0px 0px 1px black;
+	width: 100%;
+	font-weight: bold;
+	text-align: center;
+}
+.miejsce-div-baza {
+	text-align: right;
+	background: rgba(150, 200, 100, 0.5);
+}
+.miejsce-div-autor {
+	width: 50%;
+	float: left;
+	background: rgba(0,0,0,0.25);
+}
+.miejsce-div-data {
+	width: 50%;
+	float: right;
+	background: rgba(0,0,0,0.25);
+}
+.miejsce-div-adres {
+	background: rgba(0,0,0,0.75);
 }

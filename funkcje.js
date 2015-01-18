@@ -26,13 +26,13 @@ function reactKey(evt) {
 function checkIcons()
 {
 	obrazy = document.getElementsByClassName('image-thumbnail');
-	if (obrazy.length > 0)
+	if (obrazy.length == 0)
 	{
 		deleteIcon = document.getElementById('icon-delete');
 		selectAllIcon = document.getElementById('icon-select-all');
-		deleteIcon.style.display = 'inline-block';
-		selectAllIcon.style.display = 'inline-block';
-	}
+		deleteIcon.style.display = 'none';
+		selectAllIcon.style.display = 'none';
+	} 
 }
 
 function checkFilesCount()
@@ -116,6 +116,24 @@ function toggle_upload_box()
 	}
 }
 
+function toggle_tooltip(img)
+{
+	if (img.nextSibling.style.opacity == "1")
+	{
+		img.nextSibling.style.opacity = "0";
+		img.nextSibling.style.width = "0px";
+		img.nextSibling.style.height = "0px";
+		img.nextSibling.style.marginTop = "0px";
+	} else
+	{
+		img.nextSibling.style.opacity = "1";
+		img.nextSibling.style.width = "200px";
+		img.nextSibling.style.height = "80px";
+		img.nextSibling.style.marginTop = "-95px";
+	}
+	
+}
+
 function show_tooltip(img)
 {
 	img.onmouseout = function() { 	img.nextSibling.style.width = "0px";
@@ -148,7 +166,6 @@ function show_tooltip(img)
 		if (xmlhttp.readyState==4 && xmlhttp.status==200)
 		{
 			tooltip.innerHTML = xmlhttp.responseText;
-			//	alert("W: " + tooltip.querySelector("#obraz-opis-gowno").clientWidth + "\nH : " + tooltip.querySelector("#obraz-opis-gowno").clientHeight);
 			setTimeout(function() { h = tooltip.querySelector("#obraz-opis-autor").clientHeight + tooltip.querySelector("#obraz-opis-nazwa").clientHeight + tooltip.querySelector("#obraz-opis-tresc").clientHeight; tooltip.style.height = h + "px"; }, 400);
 		}
 	}
@@ -156,6 +173,70 @@ function show_tooltip(img)
 	xmlhttp.send();
 	
 	setTimeout(function() { tooltip.style.opacity = "1"; tooltip.style.width = "200px"; tooltip.style.height = "60px"; tooltip.style.marginTop = "-100px"; }, 50);
+}
+
+function pokaz_obraz(img)
+{
+	if (image_shown)
+	{
+		var div = document.getElementById("js-image-div");
+		closeNow(div);
+		image_shown = false;
+	}
+	
+	if (document.getElementById("js-image-div"))
+		return;
+		
+	var div = document.createElement("iframe");
+	div.frameBorder = 0;
+	div.setAttribute('id', 'js-image-div');
+	div.setAttribute('border', '0');
+	div.setAttribute('class', 'image-loading');
+	div.style.border = "1px black solid";
+	div.style.width = "64px";
+	div.style.height = "64px";
+	div.style.background = "white";
+	div.style.color = "white";
+	div.style.position = "fixed";
+	div.style.left = "50%";
+	div.style.top = "50%";
+	div.style.margin = "-25px 0px 0px -25px";	
+	document.body.appendChild(div);
+	div.contentWindow.document.open();
+	div.contentWindow.document.write("<html><body><img style = \"width: 100%; height: 100%;\" src = loading.gif></body></html>");
+	div.contentWindow.document.close();
+		
+	// When loaded, display image, and adjust size of div
+	// div.setAttribute('class', 'image-full');
+	
+	var xmlhttp;
+	if (window.XMLHttpRequest)
+	{// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	}
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function()
+	{
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			var image = new Image();
+			image.src = "data:image/jpeg;base64," + xmlhttp.responseText;
+			image.onerror = function() {alert("Image failed!");}
+			image.onload = function() {
+				maximize(div);
+				div.contentWindow.document.open();
+				div.contentWindow.document.write("<html style = \"cursor: pointer;\"><body><div style = \"width: 100%; height: 100%; background-color: black; margin: -1px; padding: 1px; \"> <img style = \"width: 100%; height: 100%; \" src = data:image/jpeg;base64," + image.src + "> </div></body></html>");
+				div.contentWindow.document.close();
+			}
+		}
+		
+	}
+	xmlhttp.open("GET","pobierz_obraz.php?baza=" + img.getAttribute('baza') + "&id=" + img.id + "&q=" + Math.random(),true);
+	xmlhttp.send();
+	setTimeout(function() { image_shown = true; }, 5);
 }
 
 function show_image(img)

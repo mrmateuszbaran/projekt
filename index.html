@@ -1,0 +1,96 @@
+<?php
+	session_start();
+	include 'globals.php';
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel = "stylesheet" type = "text/css" href = "styl.css">
+	<script src = "funkcje.js" type = "text/javascript"></script>
+	<title>Projekcik</title>
+</head>
+
+<body>
+
+<div id = "kontener">
+	<div id = "logo">
+	</div>
+	<div id = "menu">
+		<ul id = "menu_lista">
+			<li><a href = "/" id = "link-menu-home"><div style = "width:160px; height:30px; display:inline-block;"></div></a></li>
+			<?php 
+				if (isset($_SESSION['user']))
+				{
+			?>
+				<li><a href = "?strona=miejsca" id = "link-menu-miejsca"><div style = "width:170px; height:30px; display:inline-block;"></div></a></li>
+				<li><a href = "?strona=podejrzani" id = "link-menu-podejrzani"><div style = "width:140px; height:30px; margin-left:-10px; display:inline-block;"></div></a></li>
+				<li><a href = "?strona=pojazdy" id = "link-menu-pojazdy"><div style = "width:120px; height:30px; margin-left:-20px; display:inline-block;"></div></a></li>
+				<li><a href = "?strona=onas" id = "link-menu-onas"><div style = "width:140px; height:30px; margin-left:-10px; display:inline-block;"></div></a></li>
+				<li id = "link-menu-konto"><div style = "width:140px; height:30px; margin-left:-10px; display:inline-block;"></div>
+					<ul>
+						<li>
+							<a href="?strona=profil">Mój profil</a>
+						</li>
+						<li>
+							<a href="?strona=moje-sprawy">Moje sprawy</a>
+						</li>
+						<li>
+							<a href="?strona=logout">Wyloguj się</a>
+						</li>
+					</ul>
+				</li>
+			<?php
+				}
+			?>
+		</ul>
+	</div>
+	<div id = "tresc">
+		<div>
+		<?php 
+			if (isset($_SESSION['user']))
+			{
+				switch($_GET['strona'])
+				{
+					case "miejsca":
+						include "miejsca.php";
+						break;
+					case "podejrzani":
+						include "podejrzani.php";
+						break;
+					case "pojazdy":	
+						include "pojazdy.php";
+						break;
+					case "onas":
+						include "onas.php";
+						break;
+					case "profil":
+						include "profil.php";
+						break;
+					case "moje-sprawy":
+						include "moje-sprawy.php";
+						break;
+					case "logout":
+						unset($_SESSION['user']);
+						session_destroy();
+						header("Location: /");
+						break;
+					default:
+						include "glowna.php";
+						break;
+				}
+			}
+			else
+				include "login.php";
+		?>
+		</div>
+	</div>	<!-- TRESC -->
+</div> <!-- KONTENER -->
+
+</body>
+
+</html>
+<?php
+	//session_destroy();
+?>
