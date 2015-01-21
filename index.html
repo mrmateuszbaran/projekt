@@ -82,7 +82,13 @@
 				}
 			}
 			else
-				include "login.php";
+				if (file_exists("instalacja.php"))
+				{
+					include "instalacja.php";
+				} else
+				{
+					include "login.php";
+				}
 		?>
 		</div>
 	</div>	<!-- TRESC -->

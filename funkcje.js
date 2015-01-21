@@ -14,6 +14,7 @@ window.onload = function() {
 var image_shown = false;
 var upload_box_shown = false;
 var select_all = false;
+var ilosc_komunikatow = 0;
 
 function reactKey(evt) {
    if(image_shown && evt.keyCode== 27) {
@@ -30,8 +31,10 @@ function checkIcons()
 	{
 		deleteIcon = document.getElementById('icon-delete');
 		selectAllIcon = document.getElementById('icon-select-all');
-		deleteIcon.style.display = 'none';
-		selectAllIcon.style.display = 'none';
+		if (deleteIcon != null)
+			deleteIcon.style.display = 'none';
+		if (selectAllIcon != null)	
+			selectAllIcon.style.display = 'none';
 	} 
 }
 
@@ -67,7 +70,8 @@ function close(object)
 
 function closeNow(object)
 {
-	object.parentNode.removeChild(object);
+	if (object.parentNode != null)
+		object.parentNode.removeChild(object);
 }
 
 function reactClick(e)
@@ -128,7 +132,7 @@ function toggle_tooltip(img)
 	{
 		img.nextSibling.style.opacity = "1";
 		img.nextSibling.style.width = "200px";
-		img.nextSibling.style.height = "80px";
+		img.nextSibling.style.height = "90px";		// wykryj wysokość!
 		img.nextSibling.style.marginTop = "-95px";
 	}
 	
@@ -237,6 +241,219 @@ function pokaz_obraz(img)
 	xmlhttp.open("GET","pobierz_obraz.php?baza=" + img.getAttribute('baza') + "&id=" + img.id + "&q=" + Math.random(),true);
 	xmlhttp.send();
 	setTimeout(function() { image_shown = true; }, 5);
+}
+
+function usun_baze(button)
+{
+	button.parentNode.style.opacity = 0;
+	setTimeout(function() { button.parentNode.parentNode.removeChild(button.parentNode); }, 500);	
+	sprawdz_formularz(button.parentNode);
+}
+function usun_konto(button)
+{
+	button.parentNode.style.opacity = 0;
+	setTimeout(function() { button.parentNode.parentNode.removeChild(button.parentNode); }, 500);	
+	sprawdz_formularz(button.parentNode);
+}
+
+function zapisz_bazy(button)
+{
+	var wynik = "";
+	var form;
+	for (var i = 0; i < document.forms.length; i++)
+	{
+		if (document.forms[i].getAttribute("name") == "konfiguracja-baz-form")
+		{
+			form = document.forms[i];
+			wynik += "DB " +form[0].value + "\n";
+			wynik += "Typ: " + form[1].value + "\n";
+			wynik += "System: " + form[2].value + "\n";
+			wynik += "Baza: " + form[3].value + "\n";
+			wynik += "Host: " + form[4].value + "\n";
+			wynik += "User: " + form[5].value + "\n";
+			wynik += "Pass: " + form[6].value + "\n\n";
+		}
+	}
+	document.forms['zapis-baz']['konfiguracja-baz'].value = wynik;
+}
+
+function zapisz_konta(button)
+{
+	var wynik = "";
+	var form;
+	for (var i = 0; i < document.forms.length; i++)
+	{
+		if (document.forms[i].getAttribute("name") == 'konfiguracja-kont-form')
+		{
+			form = document.forms[i];
+			wynik += "Imie: " +form[0].value + "\n";
+			wynik += "Nazwisko: " + form[1].value + "\n";
+			wynik += "PESEL: " + form[2].value + "\n";
+			wynik += "Nr odznaki: " + form[3].value + "\n";
+			wynik += "Poziom: " + form[4].value + "\n\n";
+		}
+	}
+	wynik = wynik.substring(0, wynik.length-2);
+	document.forms['zapis-kont']['konfiguracja-kont'].value = wynik;
+}
+
+function sprawdz_formularz(form)
+{
+	var co = form.getAttribute('name') == "konfiguracja-baz-form" ? "baz" : "kont";
+	var ok = true;
+	for (var x = 0; x < document.forms.length; x++)
+	{
+		if (document.forms[x].getAttribute('name') == form.getAttribute('name'))
+		{
+			for (var i = 0, iLen = form.length; i < iLen; i++) 
+			{
+				if (document.forms[x][i].tagName == "INPUT" && document.forms[x][i].getAttribute('type') != "button")
+				{
+					if (document.forms[x][i].value.length == 0)
+						ok = false;
+				} 
+			}
+		}
+	}
+	
+	if (ok)
+	{
+		document.getElementById("konfiguracja-"+co+"-save").disabled = false;
+		document.getElementById("konfiguracja-"+co+"-save").style.opacity = "1";
+		document.getElementById("konfiguracja-"+co+"-save").style.cursor = "pointer";
+	}
+	else 
+	{
+		if (!document.getElementById("konfiguracja-"+co+"-save").disabled)
+			pokaz_ostrzezenie("Aby zapisać konfigurację, uzupełnij wszystkie pola!");
+		document.getElementById("konfiguracja-"+co+"-save").disabled = true;
+		document.getElementById("konfiguracja-"+co+"-save").style.opacity = "0.2";
+		document.getElementById("konfiguracja-"+co+"-save").style.cursor = "default";
+	}
+}
+
+function dodaj_baze(button)
+{
+	document.getElementById("konfiguracja-baz-save").disabled = true;
+	document.getElementById("konfiguracja-baz-save").style.opacity = "0.2";
+	document.getElementById("konfiguracja-baz-save").style.cursor = "default";
+		
+	var form = document.createElement("form");
+	form.onchange = function() { sprawdz_formularz(form); };
+	form.setAttribute('class', 'konfiguracja-form');
+	form.setAttribute('name', 'konfiguracja-baz-form');
+	form.innerHTML = "<span>Nazwa: </span><input value = \"\"><br>" +
+					"<span>Typ: </span><input value = \"\"><br>" +
+					"<span>System: </span><input value = \"\"><br>" +
+					"<span>Baza: </span><input value = \"\"><br>" +
+					"<span>Host: </span><input value = \"\"><br>" +
+					"<span>Użytkownik: </span><input value = \"\"><br>" +
+					"<span>Hasło: </span><input type = \"password\" value = \"\"><br><br><br>" + 
+					"<input type = \"button\" style = \"width:16px; height:16px; display:inline-block; cursor:pointer; border:0px; background:none; background-image:url(res/ikonki/delete.png)\" onClick = \"usun_baze(this);\"><br>";
+	form.style.opacity = 0;
+	setTimeout(function() { form.style.opacity = 1; }, 50);
+	button.parentNode.insertBefore(form, button);
+}
+
+function dodaj_konto(button)
+{
+	document.getElementById("konfiguracja-kont-save").disabled = true;
+	document.getElementById("konfiguracja-kont-save").style.opacity = "0.2";
+	document.getElementById("konfiguracja-kont-save").style.cursor = "default";
+	
+	var form = document.createElement("form");
+	form.onchange = function() { sprawdz_formularz(form); };
+	form.setAttribute('class', 'konfiguracja-form');
+	form.setAttribute('name', 'konfiguracja-kont-form');
+	form.innerHTML = "<span>Imie: </span><input value = \"\"><br>" +
+					"<span>Nazwisko: </span><input value = \"\"><br>" +
+					"<span>PESEL: </span><input value = \"\"><br>" +
+					"<span>Nr odznaki: </span><input value = \"\"><br>" +
+					"<span>Poziom: </span><input value = \"\"><br><br>" +
+					"<input type = \"button\" style = \"width:16px; height:16px; display:inline-block; cursor:pointer; border:0px; background:none; background-image:url(res/ikonki/delete.png)\" onClick = \"usun_konto(this);\"><br>";
+	form.style.opacity = 0;
+	setTimeout(function() { form.style.opacity = 1; }, 50);
+	button.parentNode.insertBefore(form, button);
+}
+
+function pokaz_komunikat(typ, wiadomosc)
+{
+	var div = document.createElement("div");
+	div.setAttribute('class', typ+'-div');
+	
+	div.onclick = function() { 	setTimeout(function() { div.style.opacity = "0"; }, 100);
+								setTimeout(function() { closeNow(div); ilosc_komunikatow--; }, 1100); };
+	if (typ == "warning")
+	{
+		div.style.backgroundColor = "rgba(200, 160, 50, 0.8)";
+	} else if (typ == "error")
+	{
+		div.style.backgroundColor = "rgba(200, 50, 50, 0.8)";
+	} else if (typ == "powodzenie")
+	{
+		div.style.backgroundColor = "rgba(50, 200, 50, 0.8)";
+	}
+	div.style.border = "2px black solid";
+	div.style.position = "fixed";
+	var top = 5 + ilosc_komunikatow * 70;
+	div.style.cursor = "pointer";
+	div.style.fontSize = "18px";
+	div.style.color = "white";
+	div.style.top = top+"px";
+	div.style.left = "25%";
+	div.style.margin = "auto";
+	div.style.width = "50%";
+	div.style.height = "48px";
+	div.style.lineHeight = "48px";
+	div.style.zIndex = "4";
+	div.style.opacity = "0";
+	div.innerHTML = "<img src = \"res/ikonki/"+typ+".png\" style = \"float:left;\">" +wiadomosc;
+	ilosc_komunikatow++;
+	setTimeout(function() { div.style.opacity = "1"; }, 100);
+	document.body.appendChild(div);
+	setTimeout(function() { div.style.opacity = "0"; }, 7000);
+	setTimeout(function() { closeNow(div); ilosc_komunikatow--; }, 8500);
+}
+
+function pokaz_ostrzezenie(wiadomosc)
+{
+	pokaz_komunikat('warning', wiadomosc);
+}
+
+function pokaz_blad(wiadomosc)
+{
+	pokaz_komunikat('error', wiadomosc);
+}
+
+function pokaz_powodzenie(wiadomosc)
+{
+	pokaz_komunikat('powodzenie', wiadomosc);
+}
+
+function instalacja_nastepny(div)
+{
+	var id = parseInt(div.id.substr(div.id.length-1, 1));
+	var nast = document.getElementById('instalacja-div-'+(id+1));
+	div.style.opacity = "0";
+	div.style.backgroundColor = "white";
+	nast.style.opacity = "1";
+	nast.style.backgroundColor = "transparent";
+	
+	setTimeout(function() { div.style.display = "none"; nast.style.display = "block"; }, 500);
+	
+}
+
+function instalacja_poprzedni(div)
+{
+	var id = parseInt(div.id.substr(div.id.length-1, 1));
+	var poprz = document.getElementById('instalacja-div-'+(id-1));
+	
+	div.style.opacity = "0";
+	div.style.backgroundColor = "white";
+	poprz.style.opacity = "1";
+	poprz.style.backgroundColor = "transparent";
+	
+	setTimeout(function() { div.style.display = "none"; poprz.style.display = "block"; }, 500);
 }
 
 function show_image(img)

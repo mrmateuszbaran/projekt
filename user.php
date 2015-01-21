@@ -2,24 +2,15 @@
 
 class Uzytkownik
 {
-	public $login = null;
+	public $nrodznaki = null;
 	public $poziom = null;
 	public $komenda = null;
 	
-	function __construct($login, $poziom, $komenda)
+	function __construct($nrodznaki, $poziom, $komenda)
 	{
-		$this->login = $login;
+		$this->nrodznaki = $nrodznaki;
 		$this->poziom = $poziom;
 		$this->komenda = $komenda;
-	}
-	
-	function ustawLogin($login)
-	{
-		$this->login = $login;
-	}
-	function ustawPoziom($poziom)
-	{
-		$this->poziom = $poziom;
 	}
 }
 

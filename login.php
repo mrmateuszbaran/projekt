@@ -118,9 +118,8 @@
 				}
 			?>
 			</select><br>
-			<span style = "width:120px; display:inline-block;">Login: </span><input type = "text" name = "login"><br>
-			<span style = "width:120px; display:inline-block;">Hasło: </span><input type = "password" name = "haslo"><br>
-			<span style = "width:120px; display:inline-block;" >Numer odznaki: </span><input type = "text" name = "nr_odz"><br>
+			<span style = "width:120px; display:inline-block;" >Numer odznaki: </span><input type = "text" name = "nrodznaki"><br>
+			<span style = "width:120px; display:inline-block;">Hasło: </span><input type = "password" name = "haslo"><br><br>
 			<input class = "przycisk" type = "submit" name = "wyslij_logowanie" value = "Zaloguj">
 		</form>
 		</div>
@@ -129,14 +128,15 @@
 	<?php 
 		if (isset($_POST['wyslij_logowanie']))
 		{
-			$wynik = $bd->wykonajZapytanie($_POST['baza'], "select * from konta where nazwa = '".$_POST['login']."' and haslomd5 = md5('".$_POST['haslo']."')");
+			echo "<hr>";
+			$wynik = $bd->wykonajZapytanie($_POST['baza'], "select * from konta where nrodznaki = '".$_POST['nrodznaki']."' and haslomd5 = md5('".$_POST['haslo']."')", true);
 			if ($wynik && count($wynik) > 0)
 			{
-				$user = new Uzytkownik($_POST['login'], $wynik['poziom'], $_POST['baza']);
+				$user = new Uzytkownik($_POST['nrodznaki'], $wynik['poziom'], $_POST['baza']);
 				$_SESSION['user'] = $user;
 				header("Location: /");
 			} else
-				echo "<br>Logowanie nie powiodło się!";
+				echo "<h3 align = \"center\"><font color = \"red\">Logowanie nie powiodło się!</font></h3>";
 		}
 	?>
 

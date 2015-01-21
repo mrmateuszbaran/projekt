@@ -5,27 +5,33 @@ class Polaczenie
 	public $system;
 	public $typ;
 	public $conn;
+	public $db;
+	public $host;
+	public $user;
+	public $pass;
 	
-	function __construct($system, $typ, $conn)
+	function __construct($system, $typ, $conn, $db, $host, $user, $pass)
 	{
 		$this->system = $system;
 		$this->typ = $typ;
 		$this->conn = $conn;
+		$this->db = $db;
+		$this->host = $host;
+		$this->user = $user;
+		$this->pass = $pass;
 	}
 }
 
 class BazaDanych
 {
 	private $polaczenia = array();
-//	private $polaczeniaMySQL = array();
-//	private $polaczeniePostgreSQL = array();
 	
 	
 	function __construct()
 	{
 		$plik = fopen("baza.conf", "r") or die("Błąd wczytywaniu pliku konfiguracyjnego!");
 		$baza = "";
-		fread($plik, 3);	// 3 znaki identyfikator UTF-8!
+		//fread($plik, 3);	// 3 znaki identyfikator UTF-8!
 		while (($linia = fgets($plik)) !== false) 
 		{
 			if ($linia != "\r\n" && $linia != feof($plik))
@@ -61,6 +67,10 @@ class BazaDanych
 	{
 		$baza = explode("\r\n", $baza);
 		
+		//echo "<pre>";
+		//var_dump($baza);
+		//echo "</pre>";
+		
 		$nazwa = trim(substr($baza[0], 3));
 		$typ = strtolower(trim(substr($baza[1], 5)));
 		$system = trim(substr($baza[2], 8));
@@ -68,21 +78,21 @@ class BazaDanych
 		$host = trim(substr($baza[4], 6));
 		$user = trim(substr($baza[5], 6));
 		$pass = trim(substr($baza[6], 6));
-		/*
-		echo "Nazwa: ".$nazwa."<br>";
+		
+		/*echo "Nazwa: ".$nazwa."<br>";
 		echo "Typ: ".$typ."<br>";
 		echo "System: ".$system."<br>";
 		echo "Baza: ".$bd."<br>";
 		echo "Host: ".$host."<br>";
 		echo "User: ".$user."<br>";
 		echo "Pass: ".$pass."<br>";
-		*/
+		/**/
 		if ($system == "MySQL")
 		{
 //			echo "Tworzenie połączenia MySQL.<br>";
 			$pol = mysql_connect($host, $user, $pass);
 			if ($pol)
-				$this->polaczenia[$nazwa] = new Polaczenie($system, $typ, $pol);
+				$this->polaczenia[$nazwa] = new Polaczenie($system, $typ, $pol, $bd, $host, $user, $pass);
 			else 
 				echo "Błąd połączenia MySQL!<br>";
 			mysql_select_db($bd, $pol);
@@ -92,10 +102,15 @@ class BazaDanych
 			$conn_string = "host=".$host." port=5432 dbname=".$bd." user=".$user." password=".$pass."";
 			$pol = pg_connect($conn_string, PGSQL_CONNECT_FORCE_NEW);
 			if ($pol)
-				$this->polaczenia[$nazwa] = new Polaczenie($system, $typ, $pol);
+				$this->polaczenia[$nazwa] = new Polaczenie($system, $typ, $pol, $bd, $host, $user, $pass);
 			else 
 				echo "Błąd połączenia PostgreSQL!<br>";
 		}
+	}
+	
+	function pobierzPolaczenia()
+	{
+		return $this->polaczenia;
 	}
 	
 	function pobierzListe()
@@ -126,7 +141,7 @@ class BazaDanych
 	}
 	
 	
-	function wykonajZapytanie($baza, $zap)
+	function wykonajZapytanie($baza, $zap, $zwroc = false)
 	{		
 		$baza = $this->polaczenia[$baza];
 		
@@ -141,14 +156,17 @@ class BazaDanych
 			return null;
 		}
 				
-		//if ($baza->system == "MySQL")
-		//{
-		//	return mysql_fetch_assoc($zapytanie);
-		//}
-		//else
-		//{
-		//	return pg_fetch_assoc($zapytanie);
-		//}
+		if ($zwroc)
+		{
+			if ($baza->system == "MySQL")
+			{
+				return mysql_fetch_assoc($zapytanie);
+			}
+			else
+			{
+				return pg_fetch_assoc($zapytanie);
+			}
+		}
 	}
 	
 	function ileDanych($tabela)
@@ -181,10 +199,13 @@ class BazaDanych
 		return $w;
 	}
 	
+	function dodajKonto($baza, $imie, $nazwisko, $pesel, $nrodznaki, $poziom, $haslo)
+	{
+		$this->wykonajZapytanie($baza, "REPLACE INTO konta(imie, nazwisko, pesel, nrodznaki, poziom, aktywne, haslomd5) VALUES ('".$imie."', '".$nazwisko."', '".$pesel."', '".$nrodznaki."', '".$poziom."', '0', md5('".$haslo."'))");
+	}
+	
 	function pobierzDane($bazy, $tabela, $kolumny = "*", $warunki = null, $sortKolumna = null, $sortKierunek = "ASC", $od = null, $ile = null)
 	{
-		// TODO
-		// Pobierz obrazy!
 		if ($tabela == null || $tabela == "")
 		{
 			echo "Podaj tabelę!<br>";
