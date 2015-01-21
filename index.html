@@ -24,11 +24,52 @@
 				if (isset($_SESSION['user']))
 				{
 			?>
-				<li><a href = "?strona=miejsca" id = "link-menu-miejsca"><div style = "width:170px; height:30px; display:inline-block;"></div></a></li>
-				<li><a href = "?strona=podejrzani" id = "link-menu-podejrzani"><div style = "width:140px; height:30px; margin-left:-10px; display:inline-block;"></div></a></li>
-				<li><a href = "?strona=pojazdy" id = "link-menu-pojazdy"><div style = "width:120px; height:30px; margin-left:-20px; display:inline-block;"></div></a></li>
-				<li><a href = "?strona=onas" id = "link-menu-onas"><div style = "width:140px; height:30px; margin-left:-10px; display:inline-block;"></div></a></li>
-				<li id = "link-menu-konto"><div style = "width:140px; height:30px; margin-left:-10px; display:inline-block;"></div>
+				<li class = "link-menu" id = "link-menu-miejsca">
+					<div style = "width:170px; height:30px; display:inline-block;"></div>
+					<ul style = "margin-left:205px; !important">
+						<li>
+							<a href="?strona=miejsca">Wyświetl listę</a>
+						</li>
+						<li>
+							<a href="?strona=szukaj&co=miejsca">Wyszukaj</a>
+						</li>
+						<li>
+							<a href="?strona=dodaj&co=miejsca">Dodaj wpis</a>
+						</li>
+					</ul>
+				</li>
+				<li class = "link-menu" id = "link-menu-podejrzani">
+					<div style = "width:140px; height:30px; margin-left:-10px; display:inline-block;"></div>
+					<ul style = "margin-left:375px; !important">
+						<li>
+							<a href="?strona=podejrzani">Wyświetl listę</a>
+						</li>
+						<li>
+							<a href="?strona=szukaj&co=podejrzani">Wyszukaj</a>
+						</li>
+						<li>
+							<a href="?strona=dodaj&co=podejrzani">Dodaj wpis</a>
+						</li>
+					</ul>
+				</li>
+				<li class = "link-menu" id = "link-menu-pojazdy">
+					<div style = "width:120px; height:30px; margin-left:-20px; display:inline-block;"></div>
+					<ul style = "margin-left:510px; !important">
+						<li>
+							<a href="?strona=pojazdy">Wyświetl listę</a>
+						</li>
+						<li>
+							<a href="?strona=szukaj&co=pojazdy">Wyszukaj</a>
+						</li>
+						<li>
+							<a href="?strona=dodaj&co=pojazdy">Dodaj wpis</a>
+						</li>
+					</ul>
+				</li>
+				<li><a href = "?strona=onas" id = "link-menu-onas">
+					<div style = "width:140px; height:30px; margin-left:-10px; display:inline-block;"></div>
+				</a></li>
+				<li class = "link-menu" id = "link-menu-konto"><div style = "width:140px; height:30px; margin-left:-10px; display:inline-block;"></div>
 					<ul>
 						<li>
 							<a href="?strona=profil">Mój profil</a>
@@ -53,6 +94,12 @@
 			{
 				switch($_GET['strona'])
 				{
+					case "miejsce":
+						include "miejsce.php";
+						break;
+					case "podejrzany":
+						include "podejrzany.php";
+						break;
 					case "miejsca":
 						include "miejsca.php";
 						break;
@@ -61,6 +108,15 @@
 						break;
 					case "pojazdy":	
 						include "pojazdy.php";
+						break;
+					case "pojazd":	
+						include "pojazd.php";
+						break;
+					case "szukaj":	
+						include "szukaj.php";
+						break;
+					case "dodaj":	
+						include "dodaj.php";
 						break;
 					case "onas":
 						include "onas.php";

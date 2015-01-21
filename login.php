@@ -133,8 +133,11 @@
 			if ($wynik && count($wynik) > 0)
 			{
 				$user = new Uzytkownik($_POST['nrodznaki'], $wynik['poziom'], $_POST['baza']);
-				$_SESSION['user'] = $user;
-				header("Location: /");
+				//$_SESSION['user'] = $user;
+				$_SESSION['user'] = $wynik[0]['imie']." ".$wynik[0]['nazwisko'];
+				$_SESSION['nrodznaki'] = $_POST['nrodznaki'];
+				$_SESSION['komenda'] = $_POST['baza'];
+				//header("Location: /");
 			} else
 				echo "<h3 align = \"center\"><font color = \"red\">Logowanie nie powiodło się!</font></h3>";
 		}

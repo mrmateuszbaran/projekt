@@ -96,6 +96,7 @@ class BazaDanych
 			else 
 				echo "Błąd połączenia MySQL!<br>";
 			mysql_select_db($bd, $pol);
+			mysql_set_charset("UTF8", $pol);
 		} else if ($system == "PostgreSQL")
 		{
 //			echo "Tworzenie połączenia PostgreSQL.<br>";
@@ -105,6 +106,7 @@ class BazaDanych
 				$this->polaczenia[$nazwa] = new Polaczenie($system, $typ, $pol, $bd, $host, $user, $pass);
 			else 
 				echo "Błąd połączenia PostgreSQL!<br>";
+			pg_set_client_encoding($pol, "UTF8");
 		}
 	}
 	
@@ -153,18 +155,29 @@ class BazaDanych
 		if (!$zapytanie)
 		{
 			echo "Błąd zapytania!<br>";
-			return null;
+			return false;
+		}
+		
+		if ($zwroc && substr($zap,0,6) == "INSERT")
+		{
+			return true;
 		}
 				
 		if ($zwroc)
 		{
 			if ($baza->system == "MySQL")
 			{
-				return mysql_fetch_assoc($zapytanie);
+				$w = array();
+				while ($wynik = mysql_fetch_assoc($zapytanie))
+					$w[] = $wynik;
+				return $w;
 			}
 			else
 			{
-				return pg_fetch_assoc($zapytanie);
+				$w = array();
+				while ($wynik = pg_fetch_assoc($zapytanie))
+					$w[] = $wynik;
+				return $w;
 			}
 		}
 	}
@@ -228,6 +241,8 @@ class BazaDanych
 				continue;
 			}
 			$zap = "SELECT ".$kolumny." FROM ".$tabela."";
+			if (isset($warunki))
+				$zap .= " WHERE ".$warunki;
 			if (isset($sortKolumna))
 				$zap .= " ORDER BY ".$sortKolumna. " ".$sortKierunek;
 			if (isset($ile))
@@ -242,6 +257,8 @@ class BazaDanych
 				$zapytanie = @pg_query($polaczenie->conn, $zap);
 			if (!$zapytanie)
 			{
+				echo $zap."<BR>";			/// usun	id
+				echo mysql_error()."<BR>";	/// usun
 				echo "Błąd zapytania ".$polaczenie->system."!<br>";
 				break;
 			}
@@ -250,11 +267,20 @@ class BazaDanych
 			{
 				$w[] = $wynik;
 				$w[count($w)-1]['baza'] = $idx;
-				if ($tabela == "miejsca" || $tabela == "podejrzani" || $tabela == "pojazdy")
+				if ($tabela == "miejsca")
 				{
-					//$id = miejsce.id
-					//$obrazy_id = pobierzDane(obraz.id, obraz_miejsce, miejsce.id == $id);
-					$w[count($w)-1]['obrazy'] = $this->pobierzDane($idx, "obrazy", "*");	// WHERE obraz.id == miejsce.id!!!! (tabela obraz_miejsce)
+					if ($obraz = $this->pobierzDane($idx, "obrazy", "dane", "idmiejsce = $wynik[idmiejsce]", null, null, null, 1))
+						$w[count($w)-1]['miniatura'] = generujMiniature($obraz[0]['dane']);
+				}
+				if ($tabela == "podejrzani")
+				{
+					if ($obraz = $this->pobierzDane($idx, "obrazy", "dane", "idpodejrzany = $wynik[idpodejrzany]", null, null, null, 1))
+						$w[count($w)-1]['miniatura'] = generujMiniature($obraz[0]['dane']);
+				}
+				if ($tabela == "pojazdy")
+				{
+					if ($obraz = $this->pobierzDane($idx, "obrazy", "dane", "idpojazd = $wynik[idpojazd]", null, null, null, 1))
+						$w[count($w)-1]['miniatura'] = generujMiniature($obraz[0]['dane']);
 				}
 			}
 		}

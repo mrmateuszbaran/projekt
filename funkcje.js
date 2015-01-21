@@ -225,20 +225,22 @@ function pokaz_obraz(img)
 	xmlhttp.onreadystatechange=function()
 	{
 		if (xmlhttp.readyState==4 && xmlhttp.status==200)
-		{
+		{			
 			var image = new Image();
-			image.src = "data:image/jpeg;base64," + xmlhttp.responseText;
-			image.onerror = function() {alert("Image failed!");}
+			image.src = "data:image/jpeg;base64," + xmlhttp.responseText.trim();
+			// TODO ^^^^^^^
+			image.onerror = function() { close(div); pokaz_blad("Nie udało się załadować obrazu!"); image_shown = false; }
 			image.onload = function() {
 				maximize(div);
 				div.contentWindow.document.open();
-				div.contentWindow.document.write("<html style = \"cursor: pointer;\"><body><div style = \"width: 100%; height: 100%; background-color: black; margin: -1px; padding: 1px; \"> <img style = \"width: 100%; height: 100%; \" src = data:image/jpeg;base64," + image.src + "> </div></body></html>");
+				div.contentWindow.document.write("<html style = \"cursor: pointer;\"><body><div style = \"width: 100%; height: 100%; background-color: black; margin: -1px; padding: 1px; \"> <img style = \"width: 100%; height: 100%; \" src = " + image.src + "> </div></body></html>");
 				div.contentWindow.document.close();
 			}
 		}
 		
 	}
 	xmlhttp.open("GET","pobierz_obraz.php?baza=" + img.getAttribute('baza') + "&id=" + img.id + "&q=" + Math.random(),true);
+	//xmlhttp.open("GET","get_image.php?baza=" + img.getAttribute('baza') + "&kolumna=" + wpis + "&id=" + img.id + "&q=" + Math.random(),true);
 	xmlhttp.send();
 	setTimeout(function() { image_shown = true; }, 5);
 }
@@ -454,74 +456,4 @@ function instalacja_poprzedni(div)
 	poprz.style.backgroundColor = "transparent";
 	
 	setTimeout(function() { div.style.display = "none"; poprz.style.display = "block"; }, 500);
-}
-
-function show_image(img)
-{	
-	if (image_shown)
-	{
-		var div = document.getElementById("js-image-div");
-		closeNow(div);
-		image_shown = false;
-	}
-	
-	if (document.getElementById("js-image-div"))
-		return;
-		
-	var div = document.createElement("iframe");
-	div.frameBorder = 0;
-	div.setAttribute('id', 'js-image-div');
-	div.setAttribute('border', '0');
-	div.setAttribute('class', 'image-loading');
-	div.style.border = "1px black solid";
-	div.style.width = "64px";
-	div.style.height = "64px";
-	div.style.background = "white";
-	div.style.color = "white";
-	div.style.position = "fixed";
-	div.style.left = "50%";
-	div.style.top = "50%";
-	div.style.margin = "-25px 0px 0px -25px";	
-	document.body.appendChild(div);
-	div.contentWindow.document.open();
-	div.contentWindow.document.write("<html><body><img style = \"width: 100%; height: 100%;\" src = loading.gif></body></html>");
-	div.contentWindow.document.close();
-	
-	// When loaded, display image, and adjust size of div
-	// div.setAttribute('class', 'image-full');
-	
-	var xmlhttp;
-	if (window.XMLHttpRequest)
-	{// code for IE7+, Firefox, Chrome, Opera, Safari
-		xmlhttp=new XMLHttpRequest();
-	}
-	else
-	{// code for IE6, IE5
-		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	xmlhttp.onreadystatechange=function()
-	{
-		if (xmlhttp.readyState==4 && xmlhttp.status==200)
-		{
-			// TODO:
-			// Ajax musi zwrócić rozmiar obrazu przed samym obrazem
-			// Dzięki temu będzie można ustawić rozmiar obrazu w iframie
-			// (większy wymiar - 100%, mniejszy - odpowiednio mniej)
-			
-			var image = new Image();
-			image.src = "data:image/jpeg;base64," + xmlhttp.responseText;
-			image.onload = function() {
-				maximize(div);
-				div.contentWindow.document.open();
-				div.contentWindow.document.write("<html style = \"cursor: pointer;\"><body><div style = \"width: 100%; height: 100%; background-color: black; margin: -1px; padding: 1px; \"> " +
-												"<img style = \"width: 100%; height: 100%; \" src = data:image/jpeg;base64," + xmlhttp.responseText + "> </div></body></html>");
-				div.contentWindow.document.close();
-			}
-			//return false;
-		}
-		
-	}
-	xmlhttp.open("GET","get_image.php?nazwa=" + img.id + "&q=" + Math.random(),true);
-	xmlhttp.send();
-	setTimeout(function() { image_shown = true; }, 5);
 }

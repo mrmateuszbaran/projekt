@@ -102,7 +102,8 @@ ul li {
 #link-menu-konto:hover div {
 	background: url('res/moje_konto_act.png');
 }
-#link-menu-konto > ul {
+
+.link-menu > ul {
 	overflow: hidden;
 	border: 0px;
 	width: 150px;
@@ -115,21 +116,21 @@ ul li {
 	border-radius: 5px;
 	z-index: 2;
 }
-#link-menu-konto:hover > ul {
+.link-menu:hover > ul {
 	display: block;
 	height: 70px;
 	border: 1px black solid;
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
-#link-menu-konto  > ul > li {
+.link-menu  > ul > li {
 	display: block;
 	margin: 4px;
 	width: 142px;
 	border-radius: 5px;
 	cursor: pointer;
 }
-#link-menu-konto > ul > li:hover {
+.link-menu > ul > li:hover {
 	background: rgba(255, 255, 255, 0.25);
 }
 
@@ -263,10 +264,12 @@ ul li {
 	float: right;
 }
 .news-div-tytul {
-	background: rgba(25, 150, 50, 0.25);
+	background: rgba(125, 150, 255, 0.25);
+	border-bottom: 1px black solid;
 }
 .news-div-tresc{
-	background: rgba(255, 255, 255, 0.25);
+	background: rgba(255, 255, 255, 0.5);
+	border-bottom: 1px black solid;
 }
 .news-div-data{
 	display: inline-block;
@@ -281,18 +284,17 @@ ul li {
 	text-decoration: underline;
 }
 
-.miejsce-div {
-	display: block;
+.miejsce-div, .podejrzany-div, .pojazd-div {
+	display: inline-block;
 	overflow: hidden;
-	position: absolute;
 	margin-top: -25px;
-	margin-left: 150px;
 	opacity: 0;
 	width: 0px;
 	height: 0px;
 	border: 1px black solid;
+	background: rgba(255, 200, 175, 0.25);
 }
-.miejsce-div-adres, .miejsce-div-autor, .miejsce-div-data{
+.miejsce-div-adres, .miejsce-div-autor, .miejsce-div-data, .podejrzany-div-dane{
 	border-bottom: 1px black solid;
 	color: white;
 	text-shadow: 0px 0px 1px black;
@@ -302,7 +304,9 @@ ul li {
 }
 .miejsce-div-baza {
 	text-align: right;
-	background: rgba(150, 200, 100, 0.5);
+	background: rgba(255, 200, 175, 0.25);
+	padding: 5px;
+	font-weight: bold;
 }
 .miejsce-div-autor {
 	width: 50%;
@@ -314,6 +318,62 @@ ul li {
 	float: right;
 	background: rgba(0,0,0,0.25);
 }
-.miejsce-div-adres {
-	background: rgba(0,0,0,0.75);
+.miejsce-div-adres, .podejrzany-div-dane {
+	background: rgba(0,0,25,0.5);
+}
+
+.konfiguracja-form > span{
+	width: 30%;
+	float: left;
+	margin: 1px;
+}
+.konfiguracja-form > input {
+	width: 200px;
+	float: right;
+	text-align: right;
+	margin: 1px;
+}
+.konfiguracja-form > select {
+	width: 200px;
+	float: right;
+	text-align: right;
+	margin: 1px;
+}
+.konfiguracja-form {
+	border:1px green solid; 
+	padding:5px; 
+	margin:5px;
+	width: 300px;
+}
+
+#instalacja-div-2, #instalacja-div-3, #instalacja-div-4
+{
+	display: none;
+}
+
+#stopka
+{
+	border: 1px black solid;
+	margin-top: 20px;
+	border-radius: 5px;
+	padding: 5px;
+	background: rgba(50, 50, 50, 0.2);
+}
+
+#dodaj-form
+{
+	padding: 5px;
+	border-radius: 5px;
+	box-shadow: 0px 0px 5px black;
+	width: 35%;
+}
+#dodaj-form > span
+{
+	width: 30%;
+	float: left;
+}
+#dodaj-form > input, #dodaj-form > form
+{
+	display: inline-block;
+	width: 70%;
 }
